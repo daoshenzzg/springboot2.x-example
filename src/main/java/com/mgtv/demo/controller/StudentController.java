@@ -36,6 +36,11 @@ public class StudentController {
         return Result.wrapSuccess(studentService.getStudentLocal(id));
     }
 
+    @GetMapping("/redis/list")
+    public Result<String> testRdisList() {
+        return Result.wrapSuccess(studentService.testRdisList());
+    }
+
     @PostMapping("/mq/sendMessage")
     public Result<Void> sendMessage(@RequestParam("message") String message) {
         studentService.sendMessage(StringUtils.trimToEmpty(message));

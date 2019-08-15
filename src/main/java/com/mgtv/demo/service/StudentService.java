@@ -2,11 +2,13 @@ package com.mgtv.demo.service;
 
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
+import com.mgtv.demo.config.redis.RedisClient;
 import com.mgtv.demo.dao.es.DemoRepository;
 import com.mgtv.demo.dao.mapper.master.StudentMapper;
 import com.mgtv.demo.pojo.dto.DemoMessageDTO;
 import com.mgtv.demo.pojo.document.DemoDocument;
 import com.mgtv.demo.pojo.model.master.StudentDO;
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -32,6 +34,9 @@ public class StudentService {
 
     @Autowired
     private DemoRepository demoRepository;
+
+    @Autowired
+    private RedisClient redisClient;
 
     /**
      * 学生列表
@@ -62,6 +67,19 @@ public class StudentService {
     @Cached(name = "student:", key = "#id", cacheType = CacheType.LOCAL, expire = 600)
     public StudentDO getStudentLocal(long id) {
         return studentMapper.getStudent(id);
+    }
+
+    /**
+     * Redis List操作
+     * <p>
+     * 画外音：其实只要获取到RedisAdvancedClusterCommands对象，就可以操作redis的全部命令，用法跟Jedis一样
+     */
+    public String testRdisList() {
+        RedisAdvancedClusterCommands<String, String> redisCluster = redisClient.connect().sync();
+        redisCluster.lpush("test_list", "test redis list!");
+        String value = redisCluster.rpop("test_list");
+        log.info("---------redisCluster.rpop: {}", value);
+        return value;
     }
 
     /**

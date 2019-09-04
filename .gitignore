@@ -1,4 +1,7 @@
 /.idea/
-!/src/main/resources/application-protected.yml
 /target/
 /src/main/resources/application-protected.yml
+/logs/
+/demo.ipr
+/demo.iml
+/demo.iws

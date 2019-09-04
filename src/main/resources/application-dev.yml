@@ -4,44 +4,73 @@ server:
 spring:
   application:
     name: spring-demo
-
   # DB 配置
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    druid:
-      initial-size: 5
-      max-active: 50
-      min-idle: 10
-      max-wait: 1000
-      validation-query: SELECT 1 FROM DUAL
-      validation-query-timeout: 2
-      test-on-borrow: true
-      test-on-return: false
-      test-while-idle: true
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      filters: stat,wall,slf4j
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      # 主库数据源
-      master:
-        url: jdbc:mysql://localhost:3306/user?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
-        username: root
-        password: root
-
+    dynamic:
+      primary: db1-master
+      p6spy: true
+      druid:
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        validation-query-timeout: 2
+        filters: stat,wall,slf4j
+      datasource:
+        # db1-主库数据源s
+        db1-master:
+          url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+        # db1-从数据源
+        db1-slave:
+          url: jdbc:mysql://localhost:3306/user2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+        # db2-从数据源
+        db2-slave:
+          url: jdbc:mysql://localhost:3006/user3?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+          username: root
+          password: 123456
   # Elasticsearch 配置
   data:
     elasticsearch:
       cluster-name: elasticsearch
       cluster-nodes: localhost:9300
+  # HttpClient 配置
+  http-client:
+    pool:
+      #连接池的最大连接数，0代表不限；如果取0，需要考虑连接泄露导致系统崩溃的后果
+      maxTotalConnect: 1000
+      #每个路由的最大连接数,如果只调用一个地址,可以将其设置为最大连接数
+      maxConnectPerRoute: 200
+      # 指客户端和服务器建立连接的超时时间,ms , 最大约21秒,因为内部tcp在进行三次握手建立连接时,默认tcp超时时间是20秒
+      connectTimeout: 3000
+      # 指客户端从服务器读取数据包的间隔超时时间,不是总读取时间,也就是socket timeout,ms
+      readTimeout: 5000
+      # 从连接池获取连接的timeout,不宜过大,ms
+      connectionRequestTimout: 200
+      # 重试次数
+      retryTimes: 3
+      charset: UTF-8
+      # 长连接保持时间 单位s,不宜过长
+      keepAliveTime: 10
+      # 针对不同的网址,长连接保持的存活时间,单位s,如果是频繁而持续的请求,可以设置小一点,不建议设置过大,避免大量无用连接占用内存资源
+      keepAliveTargetHost:
+        www.baidu.com: 5
 
-
-# MyBatis 配置
-mybatis:
-  #sql打印配置
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+      capital-mode: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations:
+    -classpath:mybatis/mapper/db1/*.xml
+    -classpath:mybatis/mapper/db2/*.xml
+  typeAliasesPackage: com.mgtv.demo.pojo.model.db1;com.mgtv.demo.pojo.model.db2
 
 # JetCache 配置
 jetcache:
@@ -65,9 +94,9 @@ jetcache:
         maxIdle: 200
         maxTotal: 1000
       uri:
-        - redis://localhost:6379
         - redis://localhost:6380
         - redis://localhost:6381
+        - redis://localhost:6382
 
 # RocketMQ配置
 rocketmq:
@@ -75,3 +104,8 @@ rocketmq:
   producer:
     # RocketMQ的最佳实践中推荐：一个应用尽可能用一个Topic，消息子类型用tags来标识
     group: my-group
+
+# Log 配置
+logging:
+  config: classpath:logback-spring.xml
+  path: /data/logs/spring-demo

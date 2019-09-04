@@ -1,19 +1,26 @@
 package com.mgtv.demo.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mgtv.demo.config.redis.RedisClient;
 import com.mgtv.demo.dao.es.DemoRepository;
-import com.mgtv.demo.dao.mapper.master.StudentMapper;
-import com.mgtv.demo.pojo.dto.DemoMessageDTO;
+import com.mgtv.demo.dao.mapper.db1.Student1Mapper;
+import com.mgtv.demo.dao.mapper.db2.Student2Mapper;
 import com.mgtv.demo.pojo.document.DemoDocument;
-import com.mgtv.demo.pojo.model.master.StudentDO;
+import com.mgtv.demo.pojo.dto.DemoMessageDTO;
+import com.mgtv.demo.pojo.model.db1.Student1DO;
+import com.mgtv.demo.pojo.model.db2.Student2DO;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,10 +31,13 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class StudentService {
+public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
 
-    @Autowired
-    private StudentMapper studentMapper;
+    @Resource
+    private Student1Mapper student1Mapper;
+
+    @Resource
+    private Student2Mapper student2Mapper;
 
     @Resource
     private RocketMQTemplate rocketMQTemplate;
@@ -38,13 +48,27 @@ public class StudentService {
     @Autowired
     private RedisClient redisClient;
 
+    @Autowired
+    private RestTemplate httpClientTemplate;
+
+    /**
+     * 添加学生
+     *
+     * @param student
+     * @return
+     */
+    public Student1DO addStudent(Student1DO student) {
+        student1Mapper.insert(student);
+        return student;
+    }
+
     /**
      * 学生列表
      *
      * @return
      */
-    public List<StudentDO> listStudent() {
-        return studentMapper.listStudent();
+    public List<Student1DO> listStudent() {
+        return student1Mapper.selectList(null);
     }
 
     /**
@@ -54,8 +78,8 @@ public class StudentService {
      * @return
      */
     @Cached(name = "student:", key = "#id", cacheType = CacheType.REMOTE, expire = 600)
-    public StudentDO getStudent(long id) {
-        return studentMapper.getStudent(id);
+    public Student1DO getStudent(long id) {
+        return student1Mapper.selectById(id);
     }
 
     /**
@@ -65,8 +89,23 @@ public class StudentService {
      * @return
      */
     @Cached(name = "student:", key = "#id", cacheType = CacheType.LOCAL, expire = 600)
-    public StudentDO getStudentLocal(long id) {
-        return studentMapper.getStudent(id);
+    public Student1DO getStudentLocal(long id) {
+        return student1Mapper.selectById(id);
+    }
+
+    @DS("db1-master")
+    public Student1DO getStudentDb1Master(long id) {
+        return student1Mapper.selectById(id);
+    }
+
+    @DS("db1-slave")
+    public Student1DO getStudentDb1Slave(long id) {
+        return student1Mapper.selectById(id);
+    }
+
+    @DS("db2-slave")
+    public Student2DO getStudentDB2Slave(long id) {
+        return student2Mapper.selectById(id);
     }
 
     /**
@@ -113,5 +152,17 @@ public class StudentService {
      */
     public DemoDocument getDoc(String id) {
         return demoRepository.findById(id).get();
+    }
+
+    /**
+     * HTTP get
+     *
+     * @return
+     */
+    public String httpGet() {
+        String url = "http://fantuan.bz.mgtv.com/fantuan/soKeyword";
+        String result = httpClientTemplate.getForObject(url, String.class);
+        JSONObject jsonData = JSON.parseObject(result);
+        return jsonData.getJSONObject("data").getString("keyword");
     }
 }

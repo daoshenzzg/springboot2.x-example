@@ -1,7 +1,8 @@
 package com.mgtv.demo.controller;
 
 import com.mgtv.demo.pojo.document.DemoDocument;
-import com.mgtv.demo.pojo.model.master.StudentDO;
+import com.mgtv.demo.pojo.model.db1.Student1DO;
+import com.mgtv.demo.pojo.model.db2.Student2DO;
 import com.mgtv.demo.pojo.response.Result;
 import com.mgtv.demo.service.StudentService;
 import org.apache.commons.lang3.StringUtils;
@@ -21,19 +22,46 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @PostMapping("/student/add")
+    public Result<Student1DO> addStudent(@RequestParam("studName") String studName,
+                                         @RequestParam("studAge") Integer studAge,
+                                         @RequestParam("studSex") String studSex) {
+        Student1DO student = new Student1DO();
+        student.setStudName(studName);
+        student.setStudAge(studAge);
+        student.setStudSex(studSex);
+        student = studentService.addStudent(student);
+        return Result.wrapSuccess(student);
+    }
+
     @GetMapping("/student/list")
-    public Result<List<StudentDO>> listStudent() {
+    public Result<List<Student1DO>> listStudent() {
         return Result.wrapSuccess(studentService.listStudent());
     }
 
     @GetMapping("/student/get")
-    public Result<StudentDO> getStudent(@RequestParam("id") long id) {
+    public Result<Student1DO> getStudent(@RequestParam("id") long id) {
         return Result.wrapSuccess(studentService.getStudent(id));
     }
 
     @GetMapping("/student/get2")
-    public Result<StudentDO> getStudent2(@RequestParam("id") long id) {
+    public Result<Student1DO> getStudent2(@RequestParam("id") long id) {
         return Result.wrapSuccess(studentService.getStudentLocal(id));
+    }
+
+    @GetMapping("/student/getDb1Master")
+    public Result<Student1DO> getDb1Master(@RequestParam("id") long id) {
+        return Result.wrapSuccess(studentService.getStudentDb1Master(id));
+    }
+
+    @GetMapping("/student/getDb1Slave")
+    public Result<Student1DO> getDb1Slave(@RequestParam("id") long id) {
+        return Result.wrapSuccess(studentService.getStudentDb1Slave(id));
+    }
+
+    @GetMapping("/student/getDb2Slave")
+    public Result<Student2DO> getDb2Slave(@RequestParam("id") long id) {
+        return Result.wrapSuccess(studentService.getStudentDB2Slave(id));
     }
 
     @GetMapping("/redis/list")
@@ -58,5 +86,10 @@ public class StudentController {
         doc.setTitle(title);
         studentService.saveDoc(doc);
         return Result.wrapSuccess();
+    }
+
+    @GetMapping("/http/get")
+    public Result<String> httpGet() {
+        return Result.wrapSuccess(studentService.httpGet());
     }
 }

@@ -1,15 +1,15 @@
-package com.mgtv.demo.pojo.model.master;
+package com.mgtv.demo.pojo.model.db2;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @author zhiguang@mgtv.com
  * @date 2019-08-05 17:58
  */
 @Data
-public class StudentDO implements Serializable {
+@TableName("student")
+public class Student2DO {
     private Long id;
     private String studName;
     private Integer studAge;

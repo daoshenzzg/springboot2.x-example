@@ -15,5 +15,7 @@
 减少xml配置，自动填充createTime、updateTime字段。
 * 增加 Spring RestTemplate + HttpClient组合，时间连接池、超时时间配置。
 * logback 多环境配置。
+* Jetcache 支持 jedis 操作接口。
+
 # 通用响应
 <img src="docs/result.png" height="400px;"/>

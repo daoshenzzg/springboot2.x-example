@@ -5,7 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mgtv.demo.config.redis.RedisClient;
 import com.mgtv.demo.dao.es.DemoRepository;
 import com.mgtv.demo.dao.mapper.db1.Student1Mapper;
@@ -20,6 +21,7 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -31,7 +33,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
+public class StudentService {
 
     @Resource
     private Student1Mapper student1Mapper;
@@ -67,8 +69,20 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
      *
      * @return
      */
-    public List<Student1DO> listStudent() {
-        return student1Mapper.selectList(null);
+    public List<Student1DO> listStudent(String studName) {
+        return student1Mapper.selectByName(studName);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    public IPage<Student1DO> listStudentPage(int pageNo, int pageSize) {
+        Page<Student1DO> page = new Page<>(pageNo, pageSize);
+        return student1Mapper.listStudentPage(page);
     }
 
     /**
@@ -106,6 +120,23 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
     @DS("db2-slave")
     public Student2DO getStudentDB2Slave(long id) {
         return student2Mapper.selectById(id);
+    }
+
+    /**
+     * 只能在同一数据源下使用事务
+     *
+     * @param student
+     */
+    @DS("db1-master")
+    @Transactional(rollbackFor = Exception.class)
+    public void txSave(Student1DO student) {
+        // 新增
+        student1Mapper.insert(student);
+        // 查询
+        Student1DO student1 = student1Mapper.selectById(1);
+        // 修改
+        student1.setStudName(student1.getStudName() + "-修改");
+        student1Mapper.updateById(student1);
     }
 
     /**

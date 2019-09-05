@@ -15,5 +15,11 @@
 减少xml配置，自动填充createTime、updateTime字段。
 * 增加 Spring RestTemplate + HttpClient组合，时间连接池、超时时间配置。
 * logback 多环境配置。
+
+# 更新 2019-09-05
+* 集成 Mybatis plus 分页插件，增加分页操作Demo。
+* 修复 "Mybatis plus mapper-locations 配置错误，找不到 xml" BUG。
+* 增加事务操作Demo。
+
 # 通用响应
 <img src="docs/result.png" height="400px;"/>

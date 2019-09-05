@@ -1,5 +1,6 @@
 package com.mgtv.demo.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mgtv.demo.pojo.document.DemoDocument;
 import com.mgtv.demo.pojo.model.db1.Student1DO;
 import com.mgtv.demo.pojo.model.db2.Student2DO;
@@ -34,9 +35,26 @@ public class StudentController {
         return Result.wrapSuccess(student);
     }
 
+    @PostMapping("/student/txSave")
+    public Result<Void> txSave(@RequestParam("studName") String studName,
+                               @RequestParam("studAge") Integer studAge,
+                               @RequestParam("studSex") String studSex) {
+        Student1DO student = new Student1DO();
+        student.setStudName(studName);
+        student.setStudAge(studAge);
+        student.setStudSex(studSex);
+        studentService.txSave(student);
+        return Result.wrapSuccess();
+    }
+
     @GetMapping("/student/list")
-    public Result<List<Student1DO>> listStudent() {
-        return Result.wrapSuccess(studentService.listStudent());
+    public Result<List<Student1DO>> listStudent(@RequestParam("studName") String studName) {
+        return Result.wrapSuccess(studentService.listStudent(studName));
+    }
+
+    @GetMapping("/student/page")
+    public Result<IPage<Student1DO>> selectPage(@RequestParam("pageNo") int pageNo) {
+        return Result.wrapSuccess(studentService.listStudentPage(pageNo, 5));
     }
 
     @GetMapping("/student/get")

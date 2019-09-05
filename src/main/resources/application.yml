@@ -68,8 +68,8 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations:
-    -classpath:mybatis/mapper/db1/*.xml
-    -classpath:mybatis/mapper/db2/*.xml
+    - classpath:mybatis/mapper/db1/*.xml
+    - classpath:mybatis/mapper/db2/*.xml
   typeAliasesPackage: com.mgtv.demo.pojo.model.db1;com.mgtv.demo.pojo.model.db2
 
 # JetCache 配置

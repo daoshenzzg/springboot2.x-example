@@ -27,12 +27,11 @@
 * springboot 返回json null 字段初始化。支持 Array、Collection to []; string to "", Boolean to false, 甚至 Object(?) to {} ！！！
 废话不多说，上代码
 
-Result data 字段加注解。@JacksonFill(FillTypeEnum.BRACE)
+#### Result data 字段加注解。@JacksonFill(FillTypeEnum.BRACE)  
 <img src="docs/result.png" height="400px;"/>
 
-Jackson 自定义序列化实现
+#### Jackson 自定义序列化实现  
 <img src="docs/result.png" height="400px;"/>
-
 
 # 通用响应
 <img src="docs/result.png" height="400px;"/>

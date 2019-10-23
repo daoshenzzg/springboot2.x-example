@@ -1,11 +1,12 @@
 package com.mgtv.demo.pojo.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mgtv.demo.annotation.JacksonFill;
+import com.mgtv.demo.common.enums.FillTypeEnum;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author zhiguang@mgtv.com
+ * @author daoshenzzg@163.com
  * @date 2019-08-07 16:32
  */
 @Data
@@ -16,7 +17,8 @@ public class Result<T> {
     private static final int STATUS_503 = 503;
 
     private Integer code = SUCCESS;
-    private String message = StringUtils.EMPTY;
+    private String message;
+    @JacksonFill(FillTypeEnum.BRACE)
     private T data;
     private Integer ttl = 0;
 

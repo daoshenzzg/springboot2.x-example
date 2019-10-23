@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Redis客户端
  *
- * @author zhiguang@mgtv.com
+ * @author daoshenzzg@163.com
  * @date 2019-08-15 16:09
  */
 @Component

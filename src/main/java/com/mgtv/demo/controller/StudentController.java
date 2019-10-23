@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @author zhiguang@mgtv.com
+ * @author daoshenzzg@163.com
  * @date 2019-08-05 18:45
  */
 @RestController
@@ -83,7 +83,7 @@ public class StudentController {
     }
 
     @GetMapping("/redis/list")
-    public Result<String> testRdisList() {
+    public Result<String> testRedisList() {
         return Result.wrapSuccess(studentService.testRdisList());
     }
 

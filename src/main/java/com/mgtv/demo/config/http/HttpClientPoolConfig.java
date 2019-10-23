@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * @author zhiguang@mgtv.com
+ * @author daoshenzzg@163.com
  * @date 2019-09-04 18:17
  */
 @Component

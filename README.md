@@ -22,5 +22,17 @@
 * 修复 "Mybatis plus mapper-locations 配置错误，找不到 xml" BUG。
 * 增加事务操作Demo。
 
+# 更新 2019-10-23
+我知道你们等很久了...
+* springboot 返回json null 字段初始化。支持 Array、Collection to []; string to "", Boolean to false, 甚至 Object(?) to {} ！！！
+废话不多说，上代码
+
+Result data 字段加注解。@JacksonFill(FillTypeEnum.BRACE)
+<img src="docs/result.png" height="400px;"/>
+
+Jackson 自定义序列化实现
+<img src="docs/result.png" height="400px;"/>
+
+
 # 通用响应
 <img src="docs/result.png" height="400px;"/>

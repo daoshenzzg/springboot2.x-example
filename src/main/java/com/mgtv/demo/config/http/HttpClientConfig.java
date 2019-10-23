@@ -1,6 +1,7 @@
-package com.mgtv.demo.config.http;
+package com.mgtv.cms.backyard.config.http;
 
 import com.alibaba.fastjson.JSON;
+import com.mgtv.demo.config.http.HttpClientPoolConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -42,14 +43,11 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * @author zhiguang@mgtv.com
- * @date 2019-09-04 18:12
+ * @author daoshenzzg@163.com
+ * @date 2019-09-09 11:17
  */
 @Configuration
 @Component
@@ -66,15 +64,11 @@ public class HttpClientConfig {
         return new RestTemplate();
     }
 
-
     /**
      * 创建HTTP客户端工厂
      */
     @Bean(name = "clientHttpRequestFactory")
     public ClientHttpRequestFactory clientHttpRequestFactory() {
-        /**
-         *  maxTotalConnection 和 maxConnectionPerRoute 必须要配
-         */
         if (httpClientPoolConfig.getMaxTotalConnect() <= 0) {
             throw new IllegalArgumentException("invalid maxTotalConnection: " + httpClientPoolConfig.getMaxTotalConnect());
         }
@@ -136,22 +130,21 @@ public class HttpClientConfig {
             //设置长连接保持策略
             httpClientBuilder.setKeepAliveStrategy(connectionKeepAliveStrategy());
             return httpClientBuilder.build();
-        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            log.error("初始化HTTP连接池出错", e);
+        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException ex) {
+            log.error("初始化HTTP连接池出错", ex);
         }
         return null;
     }
 
-
     /**
      * 配置长连接保持策略
+     *
      * @return
      */
-    public ConnectionKeepAliveStrategy connectionKeepAliveStrategy(){
+    public ConnectionKeepAliveStrategy connectionKeepAliveStrategy() {
         return (response, context) -> {
             // Honor 'keep-alive' header
-            HeaderElementIterator it = new BasicHeaderElementIterator(
-                    response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+            HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
             while (it.hasNext()) {
                 HeaderElement he = it.nextElement();
                 log.info("HeaderElement:{}", JSON.toJSONString(he));
@@ -160,23 +153,19 @@ public class HttpClientConfig {
                 if (value != null && "timeout".equalsIgnoreCase(param)) {
                     try {
                         return Long.parseLong(value) * 1000;
-                    } catch(NumberFormatException ignore) {
-                        log.error("解析长连接过期时间异常",ignore);
+                    } catch (NumberFormatException ignore) {
+                        log.error("解析长连接过期时间异常", ignore);
                     }
                 }
             }
-            HttpHost target = (HttpHost) context.getAttribute(
-                    HttpClientContext.HTTP_TARGET_HOST);
+            HttpHost target = (HttpHost) context.getAttribute(HttpClientContext.HTTP_TARGET_HOST);
             //如果请求目标地址,单独配置了长连接保持时间,使用该配置
-            Optional<Map.Entry<String, Integer>> any = httpClientPoolConfig.getKeepAliveTargetHost().entrySet().stream().filter(
-                    e -> e.getKey().equalsIgnoreCase(target.getHostName())).findAny();
+            Map<String, Integer> targetHost = Optional.ofNullable(httpClientPoolConfig.getKeepAliveTargetHost()).orElse(Collections.emptyMap());
+            Optional<Map.Entry<String, Integer>> any = targetHost.entrySet().stream().filter(e -> e.getKey().equalsIgnoreCase(target.getHostName())).findAny();
             //否则使用默认长连接保持时间
             return any.map(en -> en.getValue() * 1000L).orElse(httpClientPoolConfig.getKeepAliveTime() * 1000L);
         };
     }
-
-
-
 
     /**
      * 设置请求头

@@ -1,7 +1,7 @@
 package com.mgtv.demo.common.exception;
 
 /**
- * @author zhiguang@mgtv.com
+ * @author daoshenzzg@163.com
  * @date 2019-08-07 14:24
  */
 public class DemoRuntimeException extends RuntimeException {

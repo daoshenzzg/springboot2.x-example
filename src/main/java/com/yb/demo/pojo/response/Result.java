@@ -21,12 +21,6 @@ public class Result<T> {
     private T data;
     private Integer ttl;
 
-    /**
-     * 用于ApiLog新增操作的ID记录
-     */
-    @JsonIgnore
-    private Object id;
-
     public Result(CodeEnum code) {
         this.setCode(code.getCode());
         this.setMsg(code.getMessage());

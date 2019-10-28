@@ -23,17 +23,9 @@
 * 增加事务操作Demo。
 
 # 更新 2019-10-23
-我知道你们等很久了...
 * springboot 返回json null 字段初始化。支持 Array、Collection to []; string to "", Boolean to false, 甚至 Object(?) to {} ！！！
 废话不多说，上代码
 
-> 很多类都是类型擦除的，所以无法判断Object到底是什么类型。所以无法知道什么时候加"{}",什么时候加""，通过注解的方式，给需要初始化的bean加上一个标记，
-在自动以Jackson消息序列器里面，就可以完美实现加上"{}"了！ 
-#### Result data 字段加注解。@JacksonFill(FillTypeEnum.BRACE)  
-<img src="docs/result_data.png" height="400px;"/>
-
-#### Jackson 自定义序列化实现  
-<img src="docs/jackson.png" height="400px;"/>
-
-# 通用响应
-<img src="docs/result.png" height="400px;"/>
+# 系列文章
+* [springboot2.x Jackson自定义序列化，优雅实现String、List、Object返回""、[]、{}](https://www.jianshu.com/p/5ff776df1370)
+* [springboot2.x 集成 Mybatis plus(多数据源)，提升20%的开发效率](https://www.jianshu.com/p/bcef1351ea9c)

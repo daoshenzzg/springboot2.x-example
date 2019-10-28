@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mgtv.demo.config.redis.RedisClient;
 import com.mgtv.demo.dao.es.DemoRepository;
 import com.mgtv.demo.dao.mapper.db1.Student1Mapper;
@@ -33,7 +35,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class StudentService {
+public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
 
     @Resource
     private Student1Mapper student1Mapper;
@@ -54,6 +56,29 @@ public class StudentService {
     private RestTemplate httpClientTemplate;
 
     /**
+     * 学生列表
+     *
+     * @return
+     */
+    public List<Student1DO> listStudent(String studName) {
+        QueryWrapper<Student1DO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("student_name", studName);
+        return super.list(queryWrapper);
+    }
+
+    /**
+     * 学生列表
+     *
+     * @return
+     */
+    public IPage<Student1DO> listStudentByPage(String studName, int pageNum, int pageSize) {
+        Page<Student1DO> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<Student1DO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("student_name", studName);
+        return super.page(page, queryWrapper);
+    }
+
+    /**
      * 添加学生
      *
      * @param student
@@ -64,14 +89,7 @@ public class StudentService {
         return student;
     }
 
-    /**
-     * 学生列表
-     *
-     * @return
-     */
-    public List<Student1DO> listStudent(String studName) {
-        return student1Mapper.selectByName(studName);
-    }
+
 
     /**
      * 分页查询

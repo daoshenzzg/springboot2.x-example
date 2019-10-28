@@ -1,4 +1,4 @@
-package com.mgtv.demo.common.web;
+package com.mgtv.demo.config.web;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;

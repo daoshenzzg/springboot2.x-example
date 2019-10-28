@@ -1,10 +1,7 @@
-package com.mgtv.demo.common.web;
+package com.mgtv.demo.config.web;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.mgtv.demo.annotation.JacksonFill;
@@ -13,8 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * 自定义Http消息转换器
@@ -117,7 +116,13 @@ public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConve
     }
 
     JacksonHttpMessageConverter() {
-        getObjectMapper().setSerializerFactory(getObjectMapper().getSerializerFactory().withSerializerModifier(new MyBeanSerializerModifier()));
+        ObjectMapper objectMapper = getObjectMapper();
+        // 日期格式化
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        // 时区设置
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        objectMapper.setSerializerFactory(objectMapper.getSerializerFactory()
+                .withSerializerModifier(new MyBeanSerializerModifier()));
     }
 
 }

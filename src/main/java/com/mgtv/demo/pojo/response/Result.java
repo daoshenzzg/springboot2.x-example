@@ -2,99 +2,95 @@ package com.mgtv.demo.pojo.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mgtv.demo.annotation.JacksonFill;
-import com.mgtv.demo.common.enums.FillTypeEnum;
+import com.mgtv.demo.common.enums.CodeEnum;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * @author daoshenzzg@163.com
+ * 通用响应
+ *
+ * @author zhiguang@mgtv.com
  * @date 2019-08-07 16:32
  */
 @Data
+@NoArgsConstructor
 public class Result<T> {
-    private static final int SUCCESS = 200;
-    private static final int STATUS_404 = 404;
-    private static final int STATUS_500 = 500;
-    private static final int STATUS_503 = 503;
-
-    private Integer code = SUCCESS;
-    private String message;
-    @JacksonFill(FillTypeEnum.BRACE)
+    private Integer code = CodeEnum.OK.getCode();
+    private String msg = CodeEnum.OK.getMessage();
+    @JacksonFill
     private T data;
-    private Integer ttl = 0;
+    private Integer ttl;
 
-    public Result(int code, String message) {
-        this.code = code;
-        this.message = message;
+    /**
+     * 用于ApiLog新增操作的ID记录
+     */
+    @JsonIgnore
+    private Object id;
+
+    public Result(CodeEnum code) {
+        this.setCode(code.getCode());
+        this.setMsg(code.getMessage());
     }
 
     public Result(T data) {
+        CodeEnum code = CodeEnum.OK;
+        this.setCode(code.getCode());
+        this.setMsg(code.getMessage());
         this.setData(data);
     }
 
-    public Result() {
+    @JsonIgnore
+    public boolean isOk() {
+        return CodeEnum.OK.getCode().equals(this.code);
     }
 
-    @JsonIgnore
-    public boolean isSuccess() {
-        return SUCCESS == this.code;
+    /**
+     * 附加信息
+     *
+     * @param remark
+     * @return
+     */
+    public Result withRemark(String remark) {
+        this.setMsg(this.getMsg() + "(" + remark + ")");
+        return this;
     }
 
     /**
      * 构建失败返回结果
      *
-     * @param code    状态码
-     * @param message 提示信息
+     * @param code 状态码
      * @return 失败返回结果
      */
-    public static Result wrapError(int code, String message) {
-        return new Result(code, message);
+    public static Result renderErr(CodeEnum code) {
+        return new Result(code);
     }
 
     /**
-     * 构建未找到资源的返回结果，比如查询用户没找到，可以使用此方法构建
-     *
-     * @param message 提示信息
-     * @return 错误结果
-     */
-    public static Result wrap404Error(String message) {
-        return wrapError(STATUS_404, message);
-    }
-
-
-    /**
-     * 构建系统错误结构，比如由程序引发的空指针错误等
-     *
-     * @param message 提示信息
-     * @return 错误结果
-     */
-    public static Result wrap500Error(String message) {
-        return wrapError(STATUS_500, message);
-    }
-
-    /**
-     * 系统错误
+     * 构建无效操作返回结果
      *
      * @return
      */
-    public static Result wrap500Error() {
-        return wrap500Error("系统错误");
+    public static Result renderVain() {
+        return new Result(CodeEnum.INVALID_OPERATION);
     }
 
     /**
-     * 系统熔断保护
+     * 构建成功返回结果
      *
      * @return
      */
-    public static Result wrapProtectedError() {
-        return wrapError(STATUS_503, "系统繁忙");
+    public static Result renderOk() {
+        return new Result(CodeEnum.OK);
     }
 
-
-    public static Result wrapSuccess() {
-        return new Result();
-    }
-
-    public static <T> Result<T> wrapSuccess(T a) {
-        return new Result<>(a);
+    /**
+     * 构建成功返回结果(带数据)
+     *
+     * @param data
+     * @param <T>
+     * @return
+     */
+    public static <T> Result<T> renderOk(T data) {
+        return new Result<>(data);
     }
 }

@@ -28,11 +28,13 @@
 
 # 更新 2019-10-29
 * springboot 全局异常处理的正确方式
+* springboot 优雅的实现 API 输出
 
 # 原创文章
 * [springboot2.x Jackson自定义序列化，优雅实现String、List、Object返回""、[]、{}](https://www.jianshu.com/p/5ff776df1370)
 * [springboot2.x 集成 Mybatis plus(多数据源)，提升20%的开发效率](https://www.jianshu.com/p/bcef1351ea9c)
 * [springboot2.x 全局异常处理正确方式](https://www.jianshu.com/p/d72daaa9b722)
+* [springboot2.x 如何优雅的实现API输出？](https://www.jianshu.com/u/ae816a99af1f)
 
 # 引用文章
 * [使用spring validation完成数据后端校验](https://blog.csdn.net/u013815546/article/details/77248003)

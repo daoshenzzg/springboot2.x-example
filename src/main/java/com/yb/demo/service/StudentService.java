@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yb.demo.common.enums.CodeEnum;
 import com.yb.demo.common.exception.BizException;
 import com.yb.demo.config.redis.RedisClient;
+import com.yb.demo.converter.StudentConverter;
 import com.yb.demo.dao.es.DemoRepository;
 import com.yb.demo.dao.mapper.db1.Student1Mapper;
 import com.yb.demo.dao.mapper.db2.Student2Mapper;
@@ -19,6 +20,7 @@ import com.yb.demo.pojo.document.DemoDocument;
 import com.yb.demo.pojo.dto.DemoMessageDTO;
 import com.yb.demo.pojo.model.db1.Student1DO;
 import com.yb.demo.pojo.model.db2.Student2DO;
+import com.yb.demo.pojo.response.StudentVO;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -58,15 +60,19 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
     @Resource(name = "httpClientTemplate")
     private RestTemplate restTemplate;
 
+    @Autowired
+    private StudentConverter studentConverter;
+
     /**
      * 学生列表
      *
      * @return
      */
-    public List<Student1DO> listStudent(String studName) {
+    public List<StudentVO> listStudent(String studName) {
         QueryWrapper<Student1DO> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("stud_name", studName);
-        return super.list(queryWrapper);
+        List<Student1DO> students = super.list(queryWrapper);
+        return studentConverter.convert(students, StudentVO.class);
     }
 
     /**

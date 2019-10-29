@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yb.demo.common.enums.CodeEnum;
+import com.yb.demo.common.exception.BizException;
 import com.yb.demo.config.redis.RedisClient;
 import com.yb.demo.dao.es.DemoRepository;
 import com.yb.demo.dao.mapper.db1.Student1Mapper;
@@ -19,6 +21,7 @@ import com.yb.demo.pojo.model.db1.Student1DO;
 import com.yb.demo.pojo.model.db2.Student2DO;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +55,8 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
     @Autowired
     private RedisClient redisClient;
 
-    @Autowired
-    private RestTemplate httpClientTemplate;
+    @Resource(name = "httpClientTemplate")
+    private RestTemplate restTemplate;
 
     /**
      * 学生列表
@@ -62,7 +65,7 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
      */
     public List<Student1DO> listStudent(String studName) {
         QueryWrapper<Student1DO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("student_name", studName);
+        queryWrapper.like("stud_name", studName);
         return super.list(queryWrapper);
     }
 
@@ -85,10 +88,13 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
      * @return
      */
     public Student1DO addStudent(Student1DO student) {
+        if (StringUtils.isBlank(student.getStudName())) {
+            // 举例扔个业务异常，实际使用过程中，应该避免扔异常
+            throw new BizException(CodeEnum.REQUEST_ERR).withRemark("studName不能为空");
+        }
         student1Mapper.insert(student);
         return student;
     }
-
 
 
     /**
@@ -210,7 +216,7 @@ public class StudentService extends ServiceImpl<Student1Mapper, Student1DO> {
      */
     public String httpGet() {
         String url = "http://fantuan.bz.mgtv.com/fantuan/soKeyword";
-        String result = httpClientTemplate.getForObject(url, String.class);
+        String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonData = JSON.parseObject(result);
         return jsonData.getJSONObject("data").getString("keyword");
     }

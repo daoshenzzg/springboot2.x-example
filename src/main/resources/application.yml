@@ -18,7 +18,7 @@ spring:
         validation-query-timeout: 2
         filters: stat,wall,slf4j
       datasource:
-        # db1-主库数据源
+        # db1-主库数据源s
         db1-master:
           url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
           username: root

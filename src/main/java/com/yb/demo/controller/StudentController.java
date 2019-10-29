@@ -6,6 +6,7 @@ import com.yb.demo.pojo.response.Result;
 import com.yb.demo.service.StudentService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,13 +21,7 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/student/add")
-    public Result addStudent(@RequestParam("studName") String studName,
-                             @RequestParam("studAge") Integer studAge,
-                             @RequestParam("studSex") String studSex) {
-        Student1DO student = new Student1DO();
-        student.setStudName(studName);
-        student.setStudAge(studAge);
-        student.setStudSex(studSex);
+    public Result addStudent(@Validated @RequestBody Student1DO student) {
         student = studentService.addStudent(student);
         return Result.renderOk(student);
     }

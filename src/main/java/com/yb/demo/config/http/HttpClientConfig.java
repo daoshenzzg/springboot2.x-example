@@ -1,7 +1,6 @@
-package com.yb.cms.backyard.config.http;
+package com.yb.demo.config.http;
 
 import com.alibaba.fastjson.JSON;
-import com.yb.demo.config.http.HttpClientPoolConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;

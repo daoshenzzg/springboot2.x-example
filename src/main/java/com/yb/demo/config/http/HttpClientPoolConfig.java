@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * @author daoshenzzg@163.com
- * @date 2019-09-04 18:17
+ * @date 2019-09-09 11:15
  */
 @Component
 @ConfigurationProperties(prefix = "spring.http-client.pool")

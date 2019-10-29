@@ -2,12 +2,12 @@ package com.yb.demo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +19,8 @@ import java.util.List;
 @SpringBootTest
 public class HttpDownloadFileTest {
 
-    @Autowired
-    private RestTemplate httpClientTemplate;
+    @Resource(name = "httpClientTemplate")
+    private RestTemplate restTemplate;
 
     @Test
     public void testDownloadFile() {
@@ -32,7 +32,7 @@ public class HttpDownloadFileTest {
         header.setAccept(list);
 
         HttpEntity<byte[]> request = new HttpEntity<>(header);
-        ResponseEntity<byte[]> response = httpClientTemplate.exchange(url, HttpMethod.POST, request, byte[].class);
+        ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, request, byte[].class);
         // 取得文件字节
         byte[] result = response.getBody();
     }

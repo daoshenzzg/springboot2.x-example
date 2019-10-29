@@ -26,6 +26,13 @@
 * springboot 返回json null 字段初始化。支持 Array、Collection to []; string to "", Boolean to false, 甚至 Object(?) to {} ！！！
 废话不多说，上代码
 
-# 系列文章
+# 更新 2019-10-29
+* springboot 全局异常处理的正确方式
+
+# 原创文章
 * [springboot2.x Jackson自定义序列化，优雅实现String、List、Object返回""、[]、{}](https://www.jianshu.com/p/5ff776df1370)
 * [springboot2.x 集成 Mybatis plus(多数据源)，提升20%的开发效率](https://www.jianshu.com/p/bcef1351ea9c)
+* [springboot2.x 全局异常处理正确方式](https://www.jianshu.com/p/d72daaa9b722)
+
+# 引用文章
+* [使用spring validation完成数据后端校验](https://blog.csdn.net/u013815546/article/details/77248003)
